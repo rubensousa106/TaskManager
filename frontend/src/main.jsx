@@ -12,6 +12,8 @@ import App from "./App.jsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.jsx";
 import AdminTarefasPage from "./pages/admin/AdminTarefasPage.jsx";
 import AdminTarefaDetailsPage from "./pages/admin/AdminTarefaDetailsPage.jsx";
+import AdminUtilizadoresPage from "./pages/admin/AdminUtilizadoresPage.jsx";
+import AdminContactosPage from "./pages/admin/AdminContactosPage.jsx";
 
 const router = createBrowserRouter([
     //Home
@@ -27,6 +29,10 @@ const router = createBrowserRouter([
     { path: "/admin/dashboard", element: <AdminDashboardPage /> },
     { path: "/admin/tarefas", element: <AdminTarefasPage /> },
     { path: "/admin/tarefas/:id", element: <AdminTarefaDetailsPage /> },
+    { path: "/admin/utilizadores", element: <AdminUtilizadoresPage /> },
+    { path: "/admin/contactos", element: <AdminContactosPage /> },
+
+
 
 
 

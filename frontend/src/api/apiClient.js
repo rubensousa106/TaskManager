@@ -74,6 +74,17 @@ export async function createContact(contact) {
     return await response.json();
 }
 
+export async function deleteContact(contactId) {
+    const response = await fetch(`${API_BASE_URL}/contacts/${contactId}`, {
+        method: "DELETE",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to delete contact");
+    }
+    return true;
+}
+
 // Update/Edit a task by ID
 export async function updateTask(id, task) {
     const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
