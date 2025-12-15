@@ -47,6 +47,7 @@ cd taskmanager
 
 ```sh
 cd backend
+```
 
 ```sh
 mvn spring-boot:run
