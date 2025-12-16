@@ -13,13 +13,24 @@ export default function TarefaDetailsPage() {
     useEffect(() => {
         async function load() {
             const data = await getTaskById(id);
-            setTask(data);
+
+            setTask({
+                ...data,
+                dueDate: data.dueDate ? data.dueDate.slice(0, 10) : ""
+            });
         }
         load();
     }, [id]);
 
     async function handleSave() {
-        await updateTask(id, task);
+        const payload = {
+            title: task.title,
+            description: task.description,
+            status: task.status,
+            dueDate: new Date(task.dueDate).toISOString()
+        };
+
+        await updateTask(id, payload);
         navigate("/tarefas");
     }
 
@@ -31,12 +42,20 @@ export default function TarefaDetailsPage() {
 
             <Input
                 value={task.title}
-                onChange={(e) => setTask({ ...task, title: e.target.value })}
+                onChange={(e) => setTask({...task, title: e.target.value})}
             />
 
             <textarea
                 value={task.description}
-                onChange={(e) => setTask({ ...task, description: e.target.value })}
+                onChange={(e) => setTask({...task, description: e.target.value})}
+            />
+            <li>Insira a Data limite da Tarefa</li>
+            <input
+                type="date"
+                value={task.dueDate}
+                onChange={(e) =>
+                    setTask({...task, dueDate: e.target.value})
+                }
             />
 
             <Button
@@ -44,7 +63,7 @@ export default function TarefaDetailsPage() {
             >
                 Guardar
             </Button>
-            
+
         </div>
     );
 }
