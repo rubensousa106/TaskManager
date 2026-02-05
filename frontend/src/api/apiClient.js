@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8080/api";
+const API_BASE_URL = "/api";
 
 // Get all tasks for the tarefas page
 export async function getTasks() {
@@ -103,7 +103,7 @@ export async function updateTask(id, task) {
 }
 
 export async function login(username, password) {
-    const response = await fetch("http://localhost:8080/api/auth/login", {
+    const response = await fetch(`${API_BASE_URL}/auth/login`,  {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

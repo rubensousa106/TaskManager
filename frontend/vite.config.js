@@ -2,20 +2,17 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-// https://vite.dev/config/
 export default defineConfig({
-    plugins: [
-        tailwindcss(),
-        react()
-    ],
-
+    plugins: [tailwindcss(), react()],
     server: {
+        host: '0.0.0.0',
         port: 5173,
-        historyApiFallback: true,  // necessário para o React Router funcionar no modo dev
-    },
-
-    preview: {
-        historyApiFallback: true,   // necessário para o React Router funcionar no modo preview
+        strictPort: true,          // se 5173 estiver ocupada, dá erro (não muda para 5174)
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8080',
+                changeOrigin: true,
+            },
+        },
     },
 })
-
