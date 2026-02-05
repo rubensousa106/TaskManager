@@ -10,6 +10,7 @@ import {
     CartesianGrid,
 } from "recharts";
 
+// Intervalos de envelhecimento das tasks
 const AGING_BUCKETS = [
     { label: "0–2d", min: 0, max: 2 },
     { label: "3–7d", min: 3, max: 7 },
@@ -18,10 +19,12 @@ const AGING_BUCKETS = [
     { label: "30+d", min: 31, max: 99999 },
 ];
 
+// Calcula o número de dias entre duas datas
 function daysBetween(dateA, dateB) {
     const ms = dateA.getTime() - dateB.getTime();
     return Math.floor(ms / (1000 * 60 * 60 * 24));
 }
+
 
 export default function AgingChart() {
     const [tasks, setTasks] = useState([]);

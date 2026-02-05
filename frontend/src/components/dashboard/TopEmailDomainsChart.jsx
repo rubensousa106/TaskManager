@@ -34,7 +34,7 @@ export default function TopEmailDomainsChart() {
 
     const data = useMemo(() => {
         const freq = new Map();
-
+        // Conta a frequência de cada domínio de email
         for (const c of contacts) {
             const email = (c.email || "").trim().toLowerCase();
             const at = email.indexOf("@");

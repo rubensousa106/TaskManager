@@ -10,13 +10,14 @@ import {
     CartesianGrid,
 } from "recharts";
 
+// Formata uma data como "YYYY-MM-DD"
 function formatDayKey(d) {
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const dd = String(d.getDate()).padStart(2, "0");
     return `${yyyy}-${mm}-${dd}`;
 }
-
+// Componente do gráfico de contactos por dia
 export default function ContactsPerDayChart() {
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -38,12 +39,13 @@ export default function ContactsPerDayChart() {
         }
         load();
     }, []);
-
+    // Calcula os contactos por dia nos últimos 14 dias
     const data = useMemo(() => {
         const days = 14;
         const now = new Date();
 
         const base = [];
+        // Inicializa os últimos 14 dias com contagem zero
         for (let i = days - 1; i >= 0; i--) {
             const d = new Date(now);
             d.setDate(now.getDate() - i);
@@ -52,7 +54,7 @@ export default function ContactsPerDayChart() {
         }
 
         const map = new Map(base.map((x) => [x.day, x]));
-
+        // Conta os contactos criados em cada dia
         for (const c of contacts) {
             if (!c.createdAt) continue;
             const d = new Date(c.createdAt);

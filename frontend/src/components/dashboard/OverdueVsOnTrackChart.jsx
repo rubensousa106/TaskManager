@@ -1,14 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import { getTasks } from "../../api/apiClient.js";
-import {
-    ResponsiveContainer,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    Tooltip,
-    CartesianGrid,
-} from "recharts";
+import {useEffect, useMemo, useState} from "react";
+import {getTasks} from "../../api/apiClient.js";
+import {Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis,} from "recharts";
 
 export default function OverdueVsOnTrackChart() {
     const [tasks, setTasks] = useState([]);
@@ -29,9 +21,10 @@ export default function OverdueVsOnTrackChart() {
                 setLoading(false);
             }
         }
+
         load();
     }, []);
-
+    // Calcula o número de tarefas em atraso vs em dia
     const data = useMemo(() => {
         const today = new Date();
         today.setHours(0, 0, 0, 0); // comparar só datas
@@ -57,8 +50,8 @@ export default function OverdueVsOnTrackChart() {
         }
 
         return [
-            { label: "Overdue", count: overdue },
-            { label: "On track", count: onTrack },
+            {label: "Overdue", count: overdue},
+            {label: "On track", count: onTrack},
         ];
     }, [tasks]);
 
@@ -66,14 +59,14 @@ export default function OverdueVsOnTrackChart() {
     if (error) return <p className="text-sm text-red-600">{error}</p>;
 
     return (
-        <div style={{ width: "100%", height: 260 }}>
+        <div style={{width: "100%", height: 260}}>
             <ResponsiveContainer>
                 <BarChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="label" />
-                    <YAxis allowDecimals={false} />
-                    <Tooltip />
-                    <Bar dataKey="count" />
+                    <CartesianGrid strokeDasharray="3 3"/>
+                    <XAxis dataKey="label"/>
+                    <YAxis allowDecimals={false}/>
+                    <Tooltip/>
+                    <Bar dataKey="count"/>
                 </BarChart>
             </ResponsiveContainer>
         </div>
