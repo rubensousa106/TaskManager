@@ -1,23 +1,23 @@
 import TarefasPage from "./pages/tarefas/TarefasPage.jsx";
 import { createTask } from "./api/apiClient.js";
 
-function App() {
-    // esta função fala com o backend e devolve a nova tarefa criada
+function App({ session }) {
     async function onCreateTaskClick(title, description) {
+        const token = session?.access_token; // JWT do supabase
 
-        console.log("onCreateTaskClick chamado com:", { title, description });
+        const newTask = await createTask(
+            {
+                title,
+                description,
+                status: "TODO",
+            },
+            token
+        );
 
-        const newTask = await createTask({
-            title: title,
-            description: description,
-            status: "TODO", // default
-        });
-
-        console.log("Resposta do backend (newTask):", newTask);
-        return newTask; // TarefasPage depois usa isto para atualizar a lista
+        return newTask;
     }
 
-    return <TarefasPage onCreateTaskClick={onCreateTaskClick} />;
+    return <TarefasPage onCreateTaskClick={onCreateTaskClick} session={session} />;
 }
 
 export default App;

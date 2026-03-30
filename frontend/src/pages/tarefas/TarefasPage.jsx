@@ -1,81 +1,108 @@
 import { useEffect, useState } from "react";
-import {createTask, deleteTask, getTaskById, getTasks} from "../../api/apiClient.js";
+import { createTask, deleteTask, getTasks } from "../../api/apiClient.js";
 import Button from "../../components/design/Button.jsx";
 import Input from "../../components/design/Input.jsx";
 import Title from "../../components/design/Title.jsx";
 import { ArrowBigLeft, SquareChartGantt, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-
-
-export default function TarefasPage({ onCreateTaskClick }) {
+export default function TarefasPage({ onCreateTaskClick, session }) {
     const [tasks, setTasks] = useState([]);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [dueDate, setDueDate] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
     const navigate = useNavigate();
-
-
+    const token = session?.access_token; // JWT do Supabase
 
     useEffect(() => {
+        let cancelled = false;
+
         async function load() {
+            setLoading(true);
+            setError("");
+
+            if (!token) {
+                if (!cancelled) {
+                    setTasks([]);
+                    setError("Precisas de fazer login para ver as tarefas.");
+                    setLoading(false);
+                }
+                return;
+            }
+
             try {
-                const data = await getTasks();
-                setTasks(Array.isArray(data) ? data : []);
+                const list = await getTasks(token);
+                if (!cancelled) setTasks(Array.isArray(list) ? list : []);
             } catch (err) {
                 console.error("Erro ao carregar tarefas:", err);
-                setError("Erro ao carregar tarefas");
-                setTasks([]); // em erro, trata como lista vazia
+                if (!cancelled) {
+                    setError(err.message || "Erro ao carregar tarefas");
+                    setTasks([]);
+                }
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         }
+
         load();
-    }, []);
+        return () => {
+            cancelled = true;
+        };
+    }, [token]);
 
     async function handleDeleteTask(id) {
         try {
-            await deleteTask(id);
+            if (!token) {
+                alert("Faz login primeiro.");
+                return;
+            }
+            await deleteTask(id, token);
             setTasks((prev) => prev.filter((t) => t.id !== id));
         } catch (err) {
             console.error("Erro ao apagar tarefa:", err);
-            alert("Erro ao apagar tarefa.");
+            alert(err.message || "Erro ao apagar tarefa.");
         }
     }
 
     async function handleCreateTask() {
+        if (typeof onCreateTaskClick === "function") {
+
+        }
+
+        if (!token) {
+            alert("Faz login primeiro.");
+            return;
+        }
+
         if (!title.trim() || !description.trim() || !dueDate) {
             alert("Título, descrição e data limite são obrigatórios!");
             return;
         }
 
         const payload = {
-            title,
-            description,
+            title: title.trim(),
+            description: description.trim(),
             status: "TODO",
-            dueDate: new Date(dueDate).toISOString()
+            dueDate: new Date(dueDate).toISOString(),
         };
 
         try {
-            const newTask = await createTask(payload);
+            const newTask = await createTask(payload, token);
             setTasks((prev) => [...prev, newTask]);
-
             setTitle("");
             setDescription("");
             setDueDate("");
         } catch (err) {
             console.error("Erro ao criar tarefa:", err);
-            alert("Erro ao criar tarefa.");
+            alert(err.message || "Erro ao criar tarefa.");
         }
     }
 
-
-
     return (
         <div>
-            {/* Button Navegar Para o Menu Anterior */}
             <div className="flex items-center gap-4">
                 <Button onClick={() => navigate("/")} title="Dashboard">
                     <ArrowBigLeft />
@@ -83,11 +110,9 @@ export default function TarefasPage({ onCreateTaskClick }) {
                 <Title>Tarefas</Title>
             </div>
 
-            {/* Loading / Error (sem perder o layout) */}
             {loading && <p className="mt-4 text-gray-600">A carregar tarefas...</p>}
             {!loading && error && <p className="mt-4 text-red-600">{error}</p>}
 
-            {/* Lista de tarefas (aparece quando apos o loading) */}
             {!loading && (
                 <ul>
                     {tasks.length === 0 ? (
@@ -98,20 +123,22 @@ export default function TarefasPage({ onCreateTaskClick }) {
                                 <div className="flex-1">
                                     <strong>{t.title}</strong> — {t.status}
                                     <p>
-                                        {`${t.description} - Até : ${t.dueDate ? t.dueDate.slice(0, 10) : "-"}`}
+                                        {`${t.description} - Até : ${
+                                            t.dueDate ? String(t.dueDate).slice(0, 10) : "-"
+                                        }`}
                                     </p>
-
                                 </div>
 
                                 <button
                                     type="button"
                                     onClick={() => navigate(`/tarefas/${t.id}`)}
                                     className="cursor-pointer"
+                                    title="Detalhes"
                                 >
                                     <SquareChartGantt className="text-blue-500 hover:text-blue-700" />
                                 </button>
 
-                                <Button onClick={() => handleDeleteTask(t.id)}>
+                                <Button onClick={() => handleDeleteTask(t.id)} title="Apagar">
                                     <Trash2 />
                                 </Button>
                             </li>
@@ -120,7 +147,6 @@ export default function TarefasPage({ onCreateTaskClick }) {
                 </ul>
             )}
 
-            {/* Formulário de criação */}
             <div className="flex flex-col gap-2 max-w-2xl mt-4">
                 <Input
                     placeholder="Insira o Título da tarefa:"
@@ -135,12 +161,9 @@ export default function TarefasPage({ onCreateTaskClick }) {
                     value={description}
                     onChange={(event) => setDescription(event.target.value)}
                 />
-                <li>Insira a Data limite da Tarefa</li>
-                <input
-                    type="date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                />
+
+                <div className="text-sm text-gray-600">Insira a Data limite da Tarefa</div>
+                <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
 
                 <Button onClick={handleCreateTask}>Criar tarefa</Button>
             </div>

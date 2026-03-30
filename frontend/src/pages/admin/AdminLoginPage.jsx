@@ -1,54 +1,69 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
-import Title from "../../components/design/Title.jsx";
-import Input from "../../components/design/Input.jsx";
-import Button from "../../components/design/Button.jsx";
-import { login } from "../../api/apiClient.js";
 
 export default function AdminLoginPage() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [err, setErr] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    useEffect(() => {
+        // se já estiver logado, salta
+        supabase.auth.getSession().then(({ data }) => {
+            if (data.session) navigate("/tarefas");
+        });
+    }, [navigate]);
 
-
-    // Função para tratar o envio do formulário de login
-    async function handleSubmit(e) {
+    async function handleLogin(e) {
         e.preventDefault();
-        setError("");
+        setErr("");
+        setLoading(true);
 
-        try {
-            await login(username, password);
-            navigate("/admin/dashboard");
-        } catch (err) {
-            console.error(err);
-            setError("Credenciais inválidas");
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        setLoading(false);
+
+        if (error) {
+            setErr(error.message);
+            return;
         }
+
+        if (data.session) navigate("/tarefas");
     }
 
     return (
-        <div className="max-w-md mx-auto mt-10 text-center p-6 border rounded-md shadow-md">
-            <Title>Admin Login</Title>
+        <div style={{ maxWidth: 420, margin: "40px auto" }}>
+            <h2>Admin Login</h2>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                <Input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+            <form onSubmit={handleLogin}>
+                <input
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    style={{ width: "100%", marginTop: 12, padding: 10 }}
                 />
-
-                <Input
-                    type="password"
+                <input
                     placeholder="Password"
+                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    style={{ width: "100%", marginTop: 12, padding: 10 }}
                 />
 
-                {error && <p className="text-red-500">{error}</p>}
+                {err && <p style={{ color: "red" }}>{err}</p>}
 
-                <Button type="submit">Entrar</Button>
+                <button
+                    type="submit"
+                    disabled={loading}
+                    style={{ width: "100%", marginTop: 12, padding: 10 }}
+                >
+                    {loading ? "A entrar..." : "Entrar"}
+                </button>
             </form>
         </div>
     );

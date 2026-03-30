@@ -5,13 +5,17 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin // podes remover se já tens CORS global
+@CrossOrigin
 public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
-        // LOGIN TEMPORÁRIO (hardcoded)
+        /*
+            * Test Login: For demonstration purposes, we are using hardcoded credentials.
+                * In a real application, we need validate the credentials against a database
+                * and generate a JWT token if the credentials are valid.
+         */
         if ("admin".equals(request.getUsername())
                 && "admin123".equals(request.getPassword())) {
 
