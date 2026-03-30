@@ -10,6 +10,7 @@ It allows users to create and manage tasks, while providing an **admin back-offi
 - **Admin Area**: Dedicated admin dashboard with full task editing capabilities
 - **Admin Authentication**: Simple admin login (development purpose)
 - **REST API**: Backend exposes a RESTful API consumed by the frontend
+- **Containerized Database**: PostgreSQL running with Docker for persistent storage
 
 ## Technologies Used
 
@@ -23,14 +24,19 @@ It allows users to create and manage tasks, while providing an **admin back-offi
 - **Spring Boot**: REST API and application logic
 - **Spring Data JPA**: Persistence layer
 - **Hibernate**: ORM
-- **H2 Database**: File-based database
+- **PostgreSQL**: Relational database
 - **Maven**: Dependency management
+
+  ### DevOps / Infrastructure
+- **Docker**: Containerized PostgreSQL database
+- **Docker Compose**: Service orchestration for local development
 
 ## Requirements
 
 - Node.js 18 or later
 - Java JDK 17 or later
 - Maven
+- Docker  
 
 ## Installation and Setup
 
@@ -39,10 +45,23 @@ It allows users to create and manage tasks, while providing an **admin back-offi
 ```sh
 git clone https://github.com/your-username/taskmanager.git
 ```
+
 ```sh
 cd taskmanager
 ```
 
+### Database Setup (Docker)
+```sh
+cd backend
+```
+```sh
+docker compose up -d
+```
+
+PostgreSQL will be available on:
+```sh
+localhost:5433
+```
 ### Backend Setup
 
 ```sh
@@ -72,6 +91,6 @@ npm run dev
 Frontend runs at:
 http://localhost:5173
 
-### Admin Login (Development)
+### Admin Authentication
 - **Username:** admin
 - **Password:** admin123
